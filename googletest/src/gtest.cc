@@ -1899,33 +1899,33 @@ AssertionResult IsHRESULTFailure(const char* expr, long hr) {  // NOLINT
 //  17 - 21 bits       11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
 
 // The maximum code-point a one-byte UTF-8 sequence can represent.
-constexpr uint32_t kMaxCodePoint1 = (static_cast<uint32_t>(1) <<  7) - 1;
+constexpr char32_t kMaxCodePoint1 = (static_cast<char32_t>(1) << 7) - 1;
 
 // The maximum code-point a two-byte UTF-8 sequence can represent.
-constexpr uint32_t kMaxCodePoint2 = (static_cast<uint32_t>(1) << (5 + 6)) - 1;
+constexpr char32_t kMaxCodePoint2 = (static_cast<char32_t>(1) << (5 + 6)) - 1;
 
 // The maximum code-point a three-byte UTF-8 sequence can represent.
-constexpr uint32_t kMaxCodePoint3 = (static_cast<uint32_t>(1) << (4 + 2*6)) - 1;
+constexpr char32_t kMaxCodePoint3 = (static_cast<char32_t>(1) << (4 + 2*6)) - 1;
 
 // The maximum code-point a four-byte UTF-8 sequence can represent.
-constexpr uint32_t kMaxCodePoint4 = (static_cast<uint32_t>(1) << (3 + 3*6)) - 1;
+constexpr char32_t kMaxCodePoint4 = (static_cast<char32_t>(1) << (3 + 3*6)) - 1;
 
 // Chops off the n lowest bits from a bit pattern.  Returns the n
 // lowest bits.  As a side effect, the original bit pattern will be
 // shifted to the right by n bits.
-inline uint32_t ChopLowBits(uint32_t* bits, int n) {
-  const uint32_t low_bits = *bits & ((static_cast<uint32_t>(1) << n) - 1);
+template <typename UnsignedInteger>
+inline UnsignedInteger ChopLowBits(UnsignedInteger* bits, int n) {
+  static_assert(std::is_unsigned<UnsignedInteger>::value, "ChopLowBits can be used only with unsigned integer types");
+  const UnsignedInteger low_bits = *bits & ((static_cast<UnsignedInteger>(1) << n) - 1);
   *bits >>= n;
   return low_bits;
 }
 
 // Converts a Unicode code point to a narrow string in UTF-8 encoding.
-// code_point parameter is of type uint32_t because wchar_t may not be
-// wide enough to contain a code point.
 // If the code_point is not a valid Unicode code point
 // (i.e. outside of Unicode range U+0 to U+10FFFF) it will be converted
 // to "(Invalid Unicode 0xXXXXXXXX)".
-std::string CodePointToUtf8(uint32_t code_point) {
+std::string CodePointToUtf8(char32_t code_point) {
   if (code_point > kMaxCodePoint4) {
     return "(Invalid Unicode 0x" + String::FormatHexUInt32(code_point) + ")";
   }
@@ -1998,7 +1998,7 @@ std::string WideStringToUtf8(const wchar_t* str, int num_chars) {
 
   ::std::stringstream stream;
   for (int i = 0; i < num_chars; ++i) {
-    uint32_t unicode_code_point;
+    char32_t unicode_code_point;
 
     if (str[i] == L'\0') {
       break;

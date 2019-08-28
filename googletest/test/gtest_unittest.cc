@@ -619,7 +619,7 @@ TEST(CodePointToUtf8Test, CanEncode8To11Bits) {
   // in wide strings and wide chars. In order to accommodate them, we have to
   // introduce such character constants as integers.
   EXPECT_EQ("\xD5\xB6",
-            CodePointToUtf8(static_cast<wchar_t>(0x576)));
+            CodePointToUtf8(static_cast<char32_t>(0x576)));
 }
 
 // Tests that Unicode code-points that have 12 to 16 bits are encoded
@@ -627,11 +627,11 @@ TEST(CodePointToUtf8Test, CanEncode8To11Bits) {
 TEST(CodePointToUtf8Test, CanEncode12To16Bits) {
   // 0000 1000 1101 0011 => 1110-0000 10-100011 10-010011
   EXPECT_EQ("\xE0\xA3\x93",
-            CodePointToUtf8(static_cast<wchar_t>(0x8D3)));
+            CodePointToUtf8(static_cast<char32_t>(0x8D3)));
 
   // 1100 0111 0100 1101 => 1110-1100 10-011101 10-001101
   EXPECT_EQ("\xEC\x9D\x8D",
-            CodePointToUtf8(static_cast<wchar_t>(0xC74D)));
+            CodePointToUtf8(static_cast<char32_t>(0xC74D)));
 }
 
 #if !GTEST_WIDE_STRING_USES_UTF16_
