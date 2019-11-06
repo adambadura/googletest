@@ -97,6 +97,7 @@ const char kShuffleFlag[] = "shuffle";
 const char kStackTraceDepthFlag[] = "stack_trace_depth";
 const char kStreamResultToFlag[] = "stream_result_to";
 const char kThrowOnFailureFlag[] = "throw_on_failure";
+const char kPreventCoreDumpsInDeathTestsFlag[] = "prevent_core_dumps_in_death_tests";
 const char kFlagfileFlag[] = "flagfile";
 
 // A valid random seed must be in [1, kMaxRandomSeed].
@@ -180,6 +181,7 @@ class GTestFlagSaver {
     stack_trace_depth_ = GTEST_FLAG(stack_trace_depth);
     stream_result_to_ = GTEST_FLAG(stream_result_to);
     throw_on_failure_ = GTEST_FLAG(throw_on_failure);
+    prevent_core_dumps_in_death_tests_ = GTEST_FLAG(prevent_core_dumps_in_death_tests);
   }
 
   // The d'tor is not virtual.  DO NOT INHERIT FROM THIS CLASS.
@@ -204,6 +206,7 @@ class GTestFlagSaver {
     GTEST_FLAG(stack_trace_depth) = stack_trace_depth_;
     GTEST_FLAG(stream_result_to) = stream_result_to_;
     GTEST_FLAG(throw_on_failure) = throw_on_failure_;
+    GTEST_FLAG(prevent_core_dumps_in_death_tests) = prevent_core_dumps_in_death_tests_;
   }
 
  private:
@@ -228,6 +231,7 @@ class GTestFlagSaver {
   int32_t stack_trace_depth_;
   std::string stream_result_to_;
   bool throw_on_failure_;
+  bool prevent_core_dumps_in_death_tests_;
 } GTEST_ATTRIBUTE_UNUSED_;
 
 // Converts a Unicode code point to a narrow string in UTF-8 encoding.

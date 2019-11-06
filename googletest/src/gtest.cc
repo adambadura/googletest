@@ -333,6 +333,12 @@ GTEST_DEFINE_bool_(
     "if exceptions are enabled or exit the program with a non-zero code "
     "otherwise. For use with an external test framework.");
 
+GTEST_DEFINE_bool_(
+    prevent_core_dumps_in_death_tests,
+    internal::BoolFromGTestEnv("prevent_core_dumps_in_death_tests", false),
+    "When this flag is specified, death tests are augmented with code to "
+    "prevent core dump generation.");
+
 #if GTEST_USE_OWN_FLAGFILE_FLAG_
 GTEST_DEFINE_string_(
     flagfile,
@@ -6384,7 +6390,10 @@ static bool ParseGoogleTestFlag(const char* const arg) {
                         &GTEST_FLAG(stack_trace_depth)) ||
          ParseStringFlag(arg, kStreamResultToFlag,
                          &GTEST_FLAG(stream_result_to)) ||
-         ParseBoolFlag(arg, kThrowOnFailureFlag, &GTEST_FLAG(throw_on_failure));
+         ParseBoolFlag(arg, kThrowOnFailureFlag,
+                       &GTEST_FLAG(throw_on_failure)) ||
+         ParseBoolFlag(arg, kPreventCoreDumpsInDeathTestsFlag,
+                       &GTEST_FLAG(prevent_core_dumps_in_death_tests));
 }
 
 #if GTEST_USE_OWN_FLAGFILE_FLAG_

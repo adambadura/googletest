@@ -184,12 +184,24 @@ inline Matcher<const ::std::string&> MakeDeathTestMatcher(
   return matcher;
 }
 
+#define GTEST_INVOKE_DEATH_TEST_STATEMENT_(statement) \
+  [&]() { \
+    auto stmt = [&]() { statement; }; \
+    if (GTEST_FLAG(prevent_core_dumps_in_death_tests)) { \
+      const ::testing::internal::CoreRLimiter core_rlimiter{}; \
+      stmt(); \
+    } \
+    else { \
+      stmt(); \
+    } \
+  }()
+
 // Traps C++ exceptions escaping statement and reports them as test
 // failures. Note that trapping SEH exceptions is not implemented here.
 # if GTEST_HAS_EXCEPTIONS
 #  define GTEST_EXECUTE_DEATH_TEST_STATEMENT_(statement, death_test) \
   try { \
-    GTEST_SUPPRESS_UNREACHABLE_CODE_WARNING_BELOW_(statement); \
+    GTEST_INVOKE_DEATH_TEST_STATEMENT_(statement); \
   } catch (const ::std::exception& gtest_exception) { \
     fprintf(\
         stderr, \
@@ -205,7 +217,7 @@ inline Matcher<const ::std::string&> MakeDeathTestMatcher(
 
 # else
 #  define GTEST_EXECUTE_DEATH_TEST_STATEMENT_(statement, death_test) \
-  GTEST_SUPPRESS_UNREACHABLE_CODE_WARNING_BELOW_(statement)
+  GTEST_INVOKE_DEATH_TEST_STATEMENT_(statement)
 
 # endif
 

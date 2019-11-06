@@ -154,6 +154,10 @@ GTEST_DECLARE_int32_(stack_trace_depth);
 // non-zero code otherwise. For use with an external test framework.
 GTEST_DECLARE_bool_(throw_on_failure);
 
+// When this flag is specified, death tests are augmented with code to
+// prevent core dump generation.
+GTEST_DECLARE_bool_(prevent_core_dumps_in_death_tests);
+
 // When this flag is set with a "host:port" string, on supported
 // platforms test results are streamed to the specified port on
 // the specified host machine.

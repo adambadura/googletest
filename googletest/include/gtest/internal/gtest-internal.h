@@ -63,6 +63,9 @@
 #include <vector>
 
 #include "gtest/gtest-message.h"
+#ifdef _GNU_SOURCE
+#include "gtest/internal/gtest-CoreRLimiter.h"
+#endif
 #include "gtest/internal/gtest-filepath.h"
 #include "gtest/internal/gtest-string.h"
 #include "gtest/internal/gtest-type-util.h"
@@ -1361,13 +1364,19 @@ struct tuple_size<testing::internal::FlatTuple<Ts...>>
 // Suppress MSVC warning 4072 (unreachable code) for the code following
 // statement if it returns or throws (or doesn't return or throw in some
 // situations).
-// NOTE: The "else" is important to keep this expansion to prevent a top-level
-// "else" from attaching to our "if".
 #define GTEST_SUPPRESS_UNREACHABLE_CODE_WARNING_BELOW_(statement) \
-  if (::testing::internal::AlwaysTrue()) {                        \
-    statement;                                                    \
-  } else                     /* NOLINT */                         \
-    static_assert(true, "")  // User must have a semicolon after expansion.
+  do { \
+    if (::testing::internal::AlwaysTrue()) { \
+      auto stmt = [&]() { statement; }; \
+      if (GTEST_FLAG(prevent_core_dumps_in_death_tests)) { \
+        const ::testing::internal::CoreRLimiter core_rlimiter{}; \
+        stmt(); \
+      } \
+      else { \
+        stmt(); \
+      } \
+    } \
+  } while (false) // User must have a semicolon after expansion.
 
 #if GTEST_HAS_EXCEPTIONS
 
